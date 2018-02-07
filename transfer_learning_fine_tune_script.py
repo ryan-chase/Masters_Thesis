@@ -1,3 +1,10 @@
+# usage:
+#  --train_dir --val_dir
+
+# this script was written to the Keras 1.x spec.  A number of important changes
+# were introduced in Keras 2.0.  See release notes here:
+# https://github.com/keras-team/keras/wiki/Keras-2.0-release-notes
+
 import os
 import sys
 import glob
@@ -94,8 +101,12 @@ def train(args):
       horizontal_flip=True
   )
 
+  # Takes the path to a directory, and generates batches of
+  # augmented/normalized data
   train_generator = train_datagen.flow_from_directory(
     args.train_dir,
+    # we specify the dimensions to which all images found will be resized
+    # see https://keras.io/preprocessing/image/
     target_size=(IM_WIDTH, IM_HEIGHT),
     batch_size=batch_size,
   )
@@ -107,6 +118,9 @@ def train(args):
   )
 
   # setup model
+  # use the flag include_top=False to leave out the weights of the last fully
+  # connected layer since that is specific to the ImageNet competition, from
+  # which the weights were previously trained
   base_model = InceptionV3(weights='imagenet', include_top=False) #include_top=False excludes final FC layer
   model = add_new_last_layer(base_model, nb_classes)
 
@@ -129,7 +143,7 @@ def train(args):
     samples_per_epoch=nb_train_samples,
     nb_epoch=nb_epoch,
     validation_data=validation_generator,
-    nb_val_samples=nb_val_samples,
+    nb_val_samples = nb_val_samples,
     class_weight='auto')
 
   model.save(args.output_model_file)
