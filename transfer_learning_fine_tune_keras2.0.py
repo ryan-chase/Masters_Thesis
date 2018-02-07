@@ -77,7 +77,7 @@ def train(args):
   """Use transfer learning and fine-tuning to train a network on a new dataset"""
   # nb_train_samples = get_nb_files(args.train_dir) #RC: don't believe this is needed
   nb_classes = len(glob.glob(args.train_dir + "/*"))
-  # nb_val_samples = get_nb_files(args.val_dir) #RC: don't believe this is needed
+  validation_steps = get_nb_files(args.val_dir) #RC: use the entire validation data set to evaluate error/loss
   epochs = int(args.epochs)
   batch_size = int(args.batch_size)
 
@@ -133,7 +133,7 @@ def train(args):
     steps_per_epoch=STEPS_PER_EPOCH, # based on the original batch size of 32
                                 # an epoch in training is 25,000. 25000/32 =  780
     validation_data=validation_generator,
-    validation_steps=VALIDATION_STEPS,
+    validation_steps=validation_steps,
     class_weight='auto')
 
   # fine-tuning
@@ -144,7 +144,7 @@ def train(args):
     steps_per_epoch=STEPS_PER_EPOCH, # based on the original batch size of 32
     epochs=epochs,
     validation_data=validation_generator,
-    validation_steps = VALIDATION_STEPS,
+    validation_steps=validation_steps,
     class_weight='auto')
 
   model.save(args.output_model_file)
