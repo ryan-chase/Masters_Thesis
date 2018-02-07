@@ -24,7 +24,7 @@ EPOCHS = 3
 BAT_SIZE = 32
 FC_SIZE = 1024
 NB_IV3_LAYERS_TO_FREEZE = 172
-
+STEPS_PER_EPOCH = 780
 
 def get_nb_files(directory):
   """Get number of files by searching directory recursively"""
@@ -75,7 +75,7 @@ def setup_to_finetune(model):
 
 def train(args):
   """Use transfer learning and fine-tuning to train a network on a new dataset"""
-  nb_train_samples = get_nb_files(args.train_dir)
+  # nb_train_samples = get_nb_files(args.train_dir) #RC: don't believe this is needed
   nb_classes = len(glob.glob(args.train_dir + "/*"))
   nb_val_samples = get_nb_files(args.val_dir)
   epochs = int(args.epochs)
@@ -130,7 +130,8 @@ def train(args):
   history_tl = model.fit_generator(
     train_generator,
     epochs=epochs,
-    samples_per_epoch=nb_train_samples,
+    steps_per_epoch=STEPS_PER_EPOCH, # based on the original batch size of 32
+                                # an epoch in training is 25,000. 25000/32 =  780
     validation_data=validation_generator,
     nb_val_samples=nb_val_samples,
     class_weight='auto')
@@ -140,7 +141,7 @@ def train(args):
 
   history_ft = model.fit_generator(
     train_generator,
-    samples_per_epoch=nb_train_samples,
+    steps_per_epoch=STEPS_PER_EPOCH, # based on the original batch size of 32
     epochs=epochs,
     validation_data=validation_generator,
     nb_val_samples = nb_val_samples,
