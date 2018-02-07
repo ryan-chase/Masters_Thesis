@@ -20,7 +20,7 @@ from keras.optimizers import SGD
 
 
 IM_WIDTH, IM_HEIGHT = 299, 299 #fixed size for InceptionV3
-NB_EPOCHS = 3
+EPOCHS = 3
 BAT_SIZE = 32
 FC_SIZE = 1024
 NB_IV3_LAYERS_TO_FREEZE = 172
@@ -78,7 +78,7 @@ def train(args):
   nb_train_samples = get_nb_files(args.train_dir)
   nb_classes = len(glob.glob(args.train_dir + "/*"))
   nb_val_samples = get_nb_files(args.val_dir)
-  nb_epoch = int(args.nb_epoch)
+  epochs = int(args.epochs)
   batch_size = int(args.batch_size)
 
   # data prep
@@ -129,7 +129,7 @@ def train(args):
 
   history_tl = model.fit_generator(
     train_generator,
-    nb_epoch=nb_epoch,
+    epochs=epochs,
     samples_per_epoch=nb_train_samples,
     validation_data=validation_generator,
     nb_val_samples=nb_val_samples,
@@ -141,7 +141,7 @@ def train(args):
   history_ft = model.fit_generator(
     train_generator,
     samples_per_epoch=nb_train_samples,
-    nb_epoch=nb_epoch,
+    epochs=epochs,
     validation_data=validation_generator,
     nb_val_samples = nb_val_samples,
     class_weight='auto')
@@ -174,7 +174,7 @@ if __name__=="__main__":
   a = argparse.ArgumentParser()
   a.add_argument("--train_dir")
   a.add_argument("--val_dir")
-  a.add_argument("--nb_epoch", default=NB_EPOCHS)
+  a.add_argument("--epochs", default=EPOCHS)
   a.add_argument("--batch_size", default=BAT_SIZE)
   a.add_argument("--output_model_file", default="inceptionv3-ft.model")
   a.add_argument("--plot", action="store_true")
