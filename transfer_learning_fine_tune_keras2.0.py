@@ -52,11 +52,11 @@ def add_new_last_layer(base_model, nb_classes):
   Returns:
     new keras model with last layer
   """
-  x = base_model.output
+  x = base_model.outputs
   x = GlobalAveragePooling2D()(x)
   x = Dense(FC_SIZE, activation='relu')(x) #new FC layer, random init
   predictions = Dense(nb_classes, activation='softmax')(x) #new softmax layer
-  model = Model(input=base_model.input, output=predictions)
+  model = Model(inputs=base_model.inputs, outputs=predictions)
   return model
 
 
